@@ -35,9 +35,32 @@ public class TokenService {
 
         LocalDate today = LocalDate.now();
 
+        if (priority) {
+
+            List<Token> todayTokens =
+                    tokenRepository.findByDoctorIdAndTokenDateOrderByTokenNumberAsc(
+                            doctorId,
+                            today
+                    );
+
+            for (Token token : todayTokens) {
+
+                if (token.isPriority()
+                        && ("WAITING".equals(token.getStatus())
+                        || "SERVING".equals(token.getStatus()))) {
+
+                    throw new RuntimeException(
+                            "A priority token is already active"
+                    );
+                }
+            }
+        }
+
         List<Token> todayTokens =
                 tokenRepository.findByDoctorIdAndTokenDateOrderByTokenNumberAsc(
-                        doctorId, today);
+                        doctorId,
+                        today
+                );
 
         int nextTokenNumber = todayTokens.size() + 1;
 
@@ -53,6 +76,7 @@ public class TokenService {
         int waitingPatients = 0;
 
         for (Token t : todayTokens) {
+
             if ("WAITING".equals(t.getStatus())) {
                 waitingPatients++;
             }
