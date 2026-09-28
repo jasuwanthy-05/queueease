@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>QueueEase — Smart OPD Queue Management</title>
+  <link rel="icon" href="data:,">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="app">
+
+    <!-- Sidebar (becomes bottom navigation on mobile) -->
+    <aside class="sidebar">
+      <div class="brand">
+        <span class="brand-mark" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>
+        </span>
+        <span class="brand-name">Queue<b>Ease</b></span>
+      </div>
+
+      <nav class="nav" aria-label="Main navigation">
+        <button class="nav-item active" data-nav="dashboard" type="button">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg>
+          <span>Dashboard</span>
+        </button>
+        <button class="nav-item" data-nav="patients" type="button">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+          <span>Patients</span>
+        </button>
+        <button class="nav-item" data-nav="token" type="button">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9a2 2 0 0 0 0 6v3a1 1 0 0 0 1 1h16a1 1 0 0 0 1-1v-3a2 2 0 0 1 0-6V6a1 1 0 0 0-1-1H4a1 1 0 0 0-1 1z"/><path d="M13 5v14" stroke-dasharray="2 2"/></svg>
+          <span>Generate Token</span>
+        </button>
+        <button class="nav-item" data-nav="queue" type="button">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01"/></svg>
+          <span>Queue</span>
+        </button>
+        <button class="nav-item" data-nav="history" type="button">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>
+          <span>History</span>
+        </button>
+      </nav>
+
+      <div class="sidebar-foot">
+        <p>OPD Token &amp; Queue<br>Management System</p>
+      </div>
+    </aside>
+
+    <div class="main">
+      <!-- Header -->
+      <header class="topbar">
+        <div class="topbar-brand">
+          <span class="brand-mark small" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>
+          </span>
+          <span class="brand-name dark">Queue<b>Ease</b></span>
+        </div>
+
+        <div class="topbar-controls">
+          <label class="doctor-picker" for="doctorSelect">
+            <span class="picker-label">Doctor</span>
+            <select id="doctorSelect" aria-label="Select doctor">
+              <option value="">Loading doctors…</option>
+            </select>
+          </label>
+          <div class="date-chip" id="currentDate"></div>
+          <div class="status-chip online" id="systemStatus" title="Connection to backend">
+            <span class="status-dot"></span><span id="statusText">Connecting…</span>
+          </div>
+        </div>
+      </header>
+
+      <main class="content">
+
+        <!-- DASHBOARD -->
+        <section class="view active" id="view-dashboard">
+          <div class="page-head">
+            <div>
+              <p class="eyebrow">OPD Overview</p>
+              <h1 id="greeting">Welcome</h1>
+              <p class="sub">Here is what is happening in the outpatient department right now.</p>
+            </div>
+            <div class="quick-actions">
+              <button class="btn btn-ghost" type="button" data-goto="patients">+ Register Patient</button>
+              <button class="btn btn-primary" type="button" data-goto="token">Generate Token</button>
+            </div>
+          </div>
+
+          <div class="stats-grid">
+            <article class="stat-card">
+              <div class="stat-icon blue"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg></div>
+              <div><p class="stat-label">Total Patients</p><p class="stat-value" id="statPatients">–</p></div>
+            </article>
+            <article class="stat-card">
+              <div class="stat-icon amber"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg></div>
+              <div><p class="stat-label">Waiting Patients</p><p class="stat-value" id="statWaiting">–</p></div>
+            </article>
+            <article class="stat-card">
+              <div class="stat-icon navy"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg></div>
+              <div><p class="stat-label">Currently Serving</p><p class="stat-value" id="statServing">–</p></div>
+            </article>
+            <article class="stat-card">
+              <div class="stat-icon green"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg></div>
+              <div><p class="stat-label">Completed Today</p><p class="stat-value" id="statCompleted">–</p></div>
+            </article>
+          </div>
+
+          <div class="dash-grid">
+            <article class="card serving-card">
+              <div class="card-head">
+                <h2>Now Serving</h2>
+                <span class="live-pill"><span class="pulse"></span>Live</span>
+              </div>
+              <div id="nowServing" class="now-serving"></div>
+              <div class="card-actions">
+                <button class="btn btn-primary btn-lg js-call-next" type="button">Call Next Patient</button>
+                <button class="btn btn-success btn-lg js-complete" type="button">Complete Consultation</button>
+              </div>
+            </article>
+
+            <article class="card">
+              <div class="card-head">
+                <h2>Waiting Queue</h2>
+                <button class="link-btn" type="button" data-goto="queue">View all →</button>
+              </div>
+              <p class="hint">Priority patients are handled by the system automatically.</p>
+              <div id="dashQueue" class="mini-queue"></div>
+            </article>
+          </div>
+        </section>
+
+        <!-- PATIENTS -->
+        <section class="view" id="view-patients">
+          <div class="page-head">
+            <div>
+              <p class="eyebrow">Patients</p>
+              <h1>Patient Registration</h1>
+              <p class="sub">Register a new patient and manage the patient directory.</p>
+            </div>
+          </div>
+
+          <div class="two-col">
+            <article class="card">
+              <div class="card-head"><h2>New Patient</h2></div>
+              <form id="patientForm" novalidate>
+                <div class="field">
+                  <label for="patientName">Patient Name</label>
+                  <input id="patientName" type="text" placeholder="e.g. Anaya Kumar" autocomplete="off" maxlength="80">
+                  <span class="field-error" id="err-patientName"></span>
+                </div>
+                <div class="field-row">
+                  <div class="field">
+                    <label for="patientAge">Age</label>
+                    <input id="patientAge" type="number" placeholder="25" min="0" max="120" inputmode="numeric">
+                    <span class="field-error" id="err-patientAge"></span>
+                  </div>
+                  <div class="field">
+                    <label for="patientPhone">Phone Number</label>
+                    <input id="patientPhone" type="tel" placeholder="9876543210" inputmode="numeric" maxlength="15">
+                    <span class="field-error" id="err-patientPhone"></span>
+                  </div>
+                </div>
+                <button class="btn btn-primary btn-block" id="registerBtn" type="submit">Register Patient</button>
+              </form>
+            </article>
+
+            <article class="card">
+              <div class="card-head">
+                <h2>Registered Patients <span class="count-pill" id="patientCount">0</span></h2>
+              </div>
+              <input class="search" id="patientSearch" type="search" placeholder="Search by name or phone…" autocomplete="off">
+              <div class="table-wrap">
+                <table class="table">
+                  <thead><tr><th>Name</th><th>Age</th><th>Phone</th></tr></thead>
+                  <tbody id="patientList"></tbody>
+                </table>
+              </div>
+            </article>
+          </div>
+        </section>
+
+        <!-- GENERATE TOKEN -->
+        <section class="view" id="view-token">
+          <div class="page-head">
+            <div>
+              <p class="eyebrow">Tokens</p>
+              <h1>Generate Token</h1>
+              <p class="sub">Issue an OPD token for a registered patient.</p>
+            </div>
+          </div>
+
+          <div class="two-col">
+            <article class="card">
+              <div class="card-head"><h2>Token Details</h2></div>
+              <form id="tokenForm" novalidate>
+                <div class="field">
+                  <label for="tokenDoctor">Doctor</label>
+                  <select id="tokenDoctor"><option value="">Loading…</option></select>
+                  <span class="field-error" id="err-tokenDoctor"></span>
+                </div>
+                <div class="field">
+                  <label for="tokenPatient">Patient</label>
+                  <select id="tokenPatient"><option value="">Loading…</option></select>
+                  <span class="field-error" id="err-tokenPatient"></span>
+                </div>
+                <label class="switch" for="tokenPriority">
+                  <input type="checkbox" id="tokenPriority">
+                  <span class="slider"></span>
+                  <span class="switch-text"><b>Priority patient</b><small>Emergency, elderly or special cases</small></span>
+                </label>
+                <button class="btn btn-primary btn-block" id="generateBtn" type="submit">Generate Token</button>
+              </form>
+            </article>
+
+            <article class="card token-stage">
+              <div id="tokenResult"></div>
+            </article>
+          </div>
+        </section>
+
+        <!-- QUEUE -->
+        <section class="view" id="view-queue">
+          <div class="page-head">
+            <div>
+              <p class="eyebrow">Queue Management</p>
+              <h1>Live Queue</h1>
+              <p class="sub" id="queueDoctorLabel">Select a doctor to see their queue.</p>
+            </div>
+            <div class="quick-actions">
+              <button class="btn btn-success js-complete" type="button">Complete Consultation</button>
+              <button class="btn btn-primary js-call-next" type="button">Call Next Patient</button>
+            </div>
+          </div>
+
+          <div class="chips" id="queueFilters">
+            <button class="chip active" data-filter="ACTIVE" type="button">Active</button>
+            <button class="chip" data-filter="WAITING" type="button">Waiting</button>
+            <button class="chip" data-filter="SERVING" type="button">Serving</button>
+            <button class="chip" data-filter="COMPLETED" type="button">Completed</button>
+            <button class="chip" data-filter="ALL" type="button">All</button>
+          </div>
+          <div id="queueList" class="queue-list"></div>
+        </section>
+
+        <!-- HISTORY -->
+        <section class="view" id="view-history">
+          <div class="page-head">
+            <div>
+              <p class="eyebrow">History</p>
+              <h1>Token History</h1>
+              <p class="sub" id="historyDoctorLabel">Select a doctor to see their history.</p>
+            </div>
+            <div class="quick-actions">
+              <button class="btn btn-ghost" id="refreshHistoryBtn" type="button">Refresh</button>
+            </div>
+          </div>
+          <article class="card">
+            <div class="table-wrap">
+              <table class="table">
+                <thead>
+                  <tr><th>Token</th><th>Patient</th><th>Type</th><th>Status</th><th>Date</th></tr>
+                </thead>
+                <tbody id="historyList"></tbody>
+              </table>
+            </div>
+          </article>
+        </section>
+
+      </main>
+    </div>
+  </div>
+
+  <div class="toast-container" id="toastContainer" aria-live="polite"></div>
+  <script src="script.js"></script>
+</body>
+</html>
